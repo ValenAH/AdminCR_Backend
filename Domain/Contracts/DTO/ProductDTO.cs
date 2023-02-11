@@ -1,7 +1,7 @@
 ﻿
 namespace Domain.Contracts.DTO
 {
-    internal class ProductDTO
+    public class ProductDTO
     {
         public int IdProduct { get; set; }
         public string? ProductName { get; set; }

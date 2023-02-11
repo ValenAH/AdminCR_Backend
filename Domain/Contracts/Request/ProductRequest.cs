@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Contracts.Request
 {
-    internal class ProductRequest
+    public class ProductRequest
     {
         public int IdProduct { get; set; }
         public string? ProductName { get; set; }

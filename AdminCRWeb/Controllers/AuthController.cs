@@ -15,6 +15,7 @@ namespace AdminCRWeb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthController : ControllerBase
     {
         private IConfiguration _config;
@@ -26,6 +27,7 @@ namespace AdminCRWeb.Controllers
             _service = service;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginRequest req)
@@ -40,28 +42,8 @@ namespace AdminCRWeb.Controllers
                     response.Header.Message = "Usuario o contraseña incorrecta";
                     return BadRequest(response);
                 }
-                var jwt = _config.GetSection("Jwt").Get<Jwt>();
-                var claims = new[]
-                {
-                new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.AddHours(1).ToString()),
-                new Claim(JwtRegisteredClaimNames.Name, user.Name),
-                new Claim("IdUser", user.IdUser.ToString()),
-                new Claim("IdRole", user.IdRole.ToString()),
-            };
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
-                var singIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                 response.Data = new LoginResponse();
-                var token = new JwtSecurityToken(
-                        jwt.Issuer,
-                        jwt.Audience,
-                        claims,
-                        expires: DateTime.UtcNow.AddMinutes(60),
-                        signingCredentials: singIn
-                    );
-                response.Data.Token = new JwtSecurityTokenHandler().WriteToken(token);
+                response.Data.Token = GenerateToken(user);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -71,11 +53,39 @@ namespace AdminCRWeb.Controllers
 
         }
 
+        private string GenerateToken(UserDTO user)
+        {
+            var jwt = _config.GetSection("Jwt").Get<Jwt>();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.AddHours(1).ToString()),
+            new Claim(JwtRegisteredClaimNames.Name, user.Name),
+            new Claim("IdUser", user.IdUser.ToString()),
+            new Claim(ClaimTypes.Role, user.IdRole.ToString()),
+            };
+
+            var token = new JwtSecurityToken(
+                        jwt.Issuer,
+                        jwt.Audience,
+                        claims,
+                        expires: DateTime.UtcNow.AddMinutes(60),
+                        signingCredentials: credentials
+                    );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+
+        }
+
         [HttpGet]
         [Route("AuthRoute")]
-        public async Task<IActionResult> AuthRoute()
+        [Authorize(Roles ="1")]
+        public IActionResult AuthRoute()
         {
-            return Ok(false);
+            return Ok(true);
         }
     }
 }

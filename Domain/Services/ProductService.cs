@@ -13,7 +13,7 @@ namespace Domain.Services
 {
     public interface IProductService
     {
-        Task<ProductDTO> GetProductById(ProductRequest req);
+        Task<ProductDTO> GetProductById(int id);
     }
     public class ProductService : IProductService
     {
@@ -25,9 +25,11 @@ namespace Domain.Services
             _repository = repository;
             _mapper = mapper;
         }
-        public async Task<ProductDTO> GeProductById(ProductRequest req)
+
+        public async Task<ProductDTO> GetProductById(int id)
         {
-            return _mapper.Map<ProductDTO>(await _repository.GetProductById(req.IdProduct));
+            var product = await _repository.GetProductById(id);
+            return _mapper.Map<ProductDTO>(product);
         }
     }
 }

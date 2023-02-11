@@ -12,7 +12,7 @@ namespace Infraestructure.Repositories
     {
         Task<Product> GetProductById(int IdProduct);
     }
-    public class ProductRepository
+    public class ProductRepository :IProductRepository
     {
         protected Context _ctx;
 
@@ -22,7 +22,7 @@ namespace Infraestructure.Repositories
         }
         public async Task<Product> GetProductById(int idProduct)
         {
-            return _ctx.Product.Where(x => x.IdProduct == idProduct).FirstOrDefault>();
+            return _ctx.Product.Where(x => x.IdProduct == idProduct).FirstOrDefault();
         }
     }
 }

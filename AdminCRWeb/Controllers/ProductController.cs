@@ -15,10 +15,11 @@ namespace AdminCRWeb.Controllers
 {
     [Route("api/[Controller]")]
     [ApiController]
+    //[Authorize]
     public class ProductController : ControllerBase
     {
-        private IConfiguration _config;
-        private IProductService _service;
+        public IConfiguration _config;
+        public IProductService _service;
 
         public ProductController(IConfiguration config, IProductService service)
         {
@@ -28,18 +29,21 @@ namespace AdminCRWeb.Controllers
         [HttpPost]
         [Route("Products")]
 
-        public async Task<IActionResult> Product(ProductRequest req)
+        public async Task<IActionResult> GetProduct(ProductRequest req)
         {
+            var response = new Response<ProductResponse>();
             try
             {
                 var product = await _service.GetProductById(req.IdProduct);
-                var response = new Response<ProductResponse>();
+
 
                 return Ok(response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
             }
         }
     }
