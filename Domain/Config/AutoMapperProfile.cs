@@ -14,6 +14,7 @@ namespace Domain.Config
         public AutoMapperProfile()
         {
             CreateMap<UserDTO, User>().ReverseMap();
+            CreateMap<ProductDTO, Product>().ReverseMap();
         }
     }
 }

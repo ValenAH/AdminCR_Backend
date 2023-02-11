@@ -25,6 +25,7 @@ namespace AdminCRWeb.Controllers
             _config = config;
             _service = service;
         }
+
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginRequest req)
@@ -63,11 +64,18 @@ namespace AdminCRWeb.Controllers
                 response.Data.Token = new JwtSecurityTokenHandler().WriteToken(token);
                 return Ok(response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.ToString());
             }
-            
+
+        }
+
+        [HttpGet]
+        [Route("AuthRoute")]
+        public async Task<IActionResult> AuthRoute()
+        {
+            return Ok(false);
         }
     }
 }
