@@ -1,58 +1,31 @@
 ﻿using Domain.Contracts;
 using Domain.Contracts.DTO;
-using Domain.Contracts.Request;
-using Domain.Contracts.Response;
 using Domain.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace AdminCRWeb.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    //[Authorize]
-    public class ProductController : ControllerBase
+    public class CustomerController : Controller
     {
         public IConfiguration _config;
-        public IProductService _service;
+        public ICustomerService _service;
 
-        public ProductController(IConfiguration config, IProductService service)
+        public CustomerController(IConfiguration config, ICustomerService service)
         {
             _config = config;
             _service = service;
         }
+
         [HttpGet]
-        [Route("GetProducts")]
+        [Route("GetCustomers")]
         public async Task<IActionResult> GetProducts()
         {
-            var response = new Response<List<ProductDTO>>();
+            var response = new Response<List<CustomerDTO>>();
             try
             {
-                response.Data = await _service.ListProducts();
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Header.Code = 500;
-                response.Header.Message = ex.ToString();
-                return BadRequest(response);
-            }
-            
-            
-        }
-        [HttpPost]
-        [Route("GetProductById")]
-        public async Task<IActionResult> GetProductById(ProductDTO req)
-        {
-            var response = new Response<ProductDTO>();
-            try
-            {
-                response.Data = await _service.GetProductById(req.ProductId);
+                response.Data = await _service.ListCustomers();
                 return Ok(response);
             }
             catch (Exception ex)
@@ -64,14 +37,13 @@ namespace AdminCRWeb.Controllers
         }
 
         [HttpPost]
-        [Route("SaveProduct")]
-        public async Task<IActionResult> SaveProduct(ProductDTO product)
+        [Route("GetCustomerById")]
+        public async Task<IActionResult> GetCustomerById(CustomerDTO req)
         {
-            var response = new Response<bool>();
+            var response = new Response<CustomerDTO>();
             try
             {
-                response.Data = await _service.SaveProduct(product);
-                response.Header.Message = response.Data ? "El producto se ha creado con éxito" : "No se guardó el producto";
+                response.Data = await _service.GetCustomerById(req.CustomerId);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -80,7 +52,25 @@ namespace AdminCRWeb.Controllers
                 response.Header.Message = ex.ToString();
                 return BadRequest(response);
             }
-            
+        }
+
+        [HttpPost]
+        [Route("SaveCustomer")]
+        public async Task<IActionResult> SaveCustomer(CustomerDTO customer)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                response.Data = await _service.SaveCustomer(customer);
+                response.Header.Message = response.Data ? "El cliente se ha creado con éxito" : "No se guardó el cliente";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
         }
     }
 }

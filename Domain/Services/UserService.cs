@@ -2,6 +2,7 @@
 using Domain.Contracts.DTO;
 using Domain.Contracts.Request;
 using Domain.Contracts.Response;
+using Infraestructure.Database.Entities;
 using Infraestructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace Domain.Services
     public interface IUserService
     {
         Task<UserDTO> GetUserByCredentials(LoginRequest req);
+        Task<List<UserDTO>> ListUsers();
+        Task<bool> SaveUser(UserDTO user);
     }
     public class UserService : IUserService
     {
@@ -27,6 +30,15 @@ namespace Domain.Services
         public async Task<UserDTO> GetUserByCredentials(LoginRequest req)
         {
             return _mapper.Map<UserDTO>(await _repository.GetUserByCredentials(req.UserName, req.Password));
+        }
+        public async Task<List<UserDTO>> ListUsers()
+        {
+            var users = await _repository.ListUsers();
+            return _mapper.Map<List<UserDTO>>(users);
+        }
+        public async Task<bool> SaveUser(UserDTO user)
+        {
+            return await _repository.SaveUser(_mapper.Map<User>(user));
         }
     }
 }

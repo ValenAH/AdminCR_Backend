@@ -15,6 +15,8 @@ namespace Domain.Config
         {
             CreateMap<UserDTO, User>().ReverseMap();
             CreateMap<ProductDTO, Product>().ReverseMap();
+            CreateMap<CustomerDTO, Customer>().ReverseMap();
+            CreateMap<SaleDTO, Sale>().ReverseMap();
         }
     }
 }

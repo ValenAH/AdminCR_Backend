@@ -10,7 +10,9 @@ namespace Infraestructure.Repositories
 {
     public interface IProductRepository
     {
-        Task<Product> GetProductById(int IdProduct);
+        Task<List<Product>> ListProducts();
+        Task<Product> GetProductById(int productId);
+        Task<bool> SaveProduct(Product product);
     }
     public class ProductRepository :IProductRepository
     {
@@ -20,9 +22,19 @@ namespace Infraestructure.Repositories
         {
             _ctx = ctx;
         }
-        public async Task<Product> GetProductById(int idProduct)
+        public async Task<List<Product>> ListProducts()
         {
-            return _ctx.Product.Where(x => x.IdProduct == idProduct).FirstOrDefault();
+            return _ctx.Product.ToList();
+        }
+        public async Task<Product> GetProductById(int productId)
+        {
+            return _ctx.Product.Where(x => x.ProductId == productId).FirstOrDefault();
+        }
+
+        public async Task<bool> SaveProduct(Product product)
+        {
+            _ctx.Product.Add(product);
+            return _ctx.SaveChanges()>0;
         }
     }
 }

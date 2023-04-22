@@ -20,6 +20,8 @@ namespace Domain.Config
             //Repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ISaleRepository, SaleRepository>();
             //AutoMapper
             var configMapper = new MapperConfiguration(cfg =>
             {

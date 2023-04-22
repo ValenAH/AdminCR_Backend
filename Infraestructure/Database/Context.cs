@@ -12,6 +12,9 @@ namespace Infraestructure.Database
     {
         public DbSet<User> User { get; set; }
         public DbSet<Product> Product { get; set; }
+        public DbSet<Customer> Customer { get; set; }
+        public DbSet<Sale> Sale { get; set; }
+        
         public Context(DbContextOptions<Context> options) :base(options)
         {
 

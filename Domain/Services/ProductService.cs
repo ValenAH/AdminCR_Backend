@@ -2,6 +2,7 @@
 using Domain.Contracts.DTO;
 using Domain.Contracts.Request;
 using Domain.Contracts.Response;
+using Infraestructure.Database.Entities;
 using Infraestructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace Domain.Services
     public interface IProductService
     {
         Task<ProductDTO> GetProductById(int id);
+        Task<List<ProductDTO>> ListProducts();
+        Task<bool> SaveProduct(ProductDTO product);
     }
     public class ProductService : IProductService
     {
@@ -26,10 +29,21 @@ namespace Domain.Services
             _mapper = mapper;
         }
 
+        public async Task<List<ProductDTO>> ListProducts()
+        {
+            var products = await _repository.ListProducts();
+            return _mapper.Map<List<ProductDTO>>(products);
+        }
+
         public async Task<ProductDTO> GetProductById(int id)
         {
             var product = await _repository.GetProductById(id);
             return _mapper.Map<ProductDTO>(product);
+        }
+
+        public async Task<bool> SaveProduct(ProductDTO product)
+        {
+            return await _repository.SaveProduct(_mapper.Map<Product>(product));
         }
     }
 }

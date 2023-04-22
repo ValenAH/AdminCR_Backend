@@ -10,7 +10,10 @@ namespace Infraestructure.Repositories
 {
     public interface IUserRepository
     {
+        Task<List<User>> ListUsers();
         Task<User> GetUserByCredentials(string user, string pass);
+        
+        Task<bool> SaveUser(User user);
     }
     public class UserRepository : IUserRepository
     {
@@ -22,6 +25,15 @@ namespace Infraestructure.Repositories
         public async Task<User> GetUserByCredentials(string user, string pass)
         {
             return _ctx.User.Where(x => x.UserName == user && x.Password == pass).FirstOrDefault();
+        }
+        public async Task<List<User>> ListUsers()
+        {
+            return _ctx.User.ToList();
+        }
+        public async Task<bool> SaveUser(User user)
+        {
+            _ctx.User.Add(user);
+            return _ctx.SaveChanges() > 0;
         }
     }
 }
