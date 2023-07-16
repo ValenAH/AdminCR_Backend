@@ -8,13 +8,13 @@ namespace Domain.Contracts.DTO
 {
     public class CustomerDTO
     {
-        public int CustomerId { get; set; }
-        public string? CustomerName { get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; }
         public string? Telephone { get; set; }
         public string? Email { get; set; }
         public string? Address { get; set; }
         public int IdentificationTypeId { get; set; }
+        public virtual IdentificationTypeDTO? IdentificationType { get; set; }
         public string? IdentificationNumber { get; set; }
-
     }
 }

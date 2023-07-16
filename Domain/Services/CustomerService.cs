@@ -11,6 +11,7 @@ namespace Domain.Services
         Task<List<CustomerDTO>> ListCustomers();
         Task<CustomerDTO> GetCustomerById(int customerId);
         Task<bool> SaveCustomer(CustomerDTO customer);
+        Task<bool> UpdateCustomer(CustomerDTO customer);
     }
     public class CustomerService: ICustomerService
     {
@@ -31,6 +32,10 @@ namespace Domain.Services
         {
             var customer = await _repository.GetCustomerById(customerId);
             return _mapper.Map<CustomerDTO>(customer);
+        }
+        public async Task<bool> UpdateCustomer(CustomerDTO customer)
+        {
+            return await _repository.UpdateCustomer(_mapper.Map<Customer>(customer));
         }
         public async Task<bool> SaveCustomer(CustomerDTO customer)
         {

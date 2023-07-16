@@ -14,6 +14,7 @@ namespace Domain.Services
     {
         Task<List<SaleDTO>> ListSales();
         Task<SaleDTO> GetSaleById(int saleId);
+        Task<bool> UpdateSale(SaleDTO sale);
         Task<bool> SaveSale(SaleDTO sale);
     }
     public class SaleService: ISaleService
@@ -35,6 +36,10 @@ namespace Domain.Services
         {
             var sale = await _repository.GetCustomerById(saleId);
             return _mapper.Map<SaleDTO>(sale);
+        }
+        public async Task<bool> UpdateSale(SaleDTO sale)
+        {
+            return await _repository.UpdateSale(_mapper.Map<Sale>(sale));
         }
         public async Task<bool> SaveSale(SaleDTO sale)
         {

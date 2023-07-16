@@ -1,5 +1,6 @@
 ﻿using Infraestructure.Database;
 using Infraestructure.Database.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Infraestructure.Repositories
         Task<List<Product>> ListProducts();
         Task<Product> GetProductById(int productId);
         Task<bool> SaveProduct(Product product);
+        Task<bool> UpdateProduct(Product product);
     }
     public class ProductRepository :IProductRepository
     {
@@ -24,16 +26,22 @@ namespace Infraestructure.Repositories
         }
         public async Task<List<Product>> ListProducts()
         {
-            return _ctx.Product.ToList();
+            return _ctx.Product.Include("Category").ToList();
         }
         public async Task<Product> GetProductById(int productId)
         {
-            return _ctx.Product.Where(x => x.ProductId == productId).FirstOrDefault();
+            return _ctx.Product.Include("Category").Where(x => x.Id == productId).FirstOrDefault();
         }
 
         public async Task<bool> SaveProduct(Product product)
         {
             _ctx.Product.Add(product);
+            return _ctx.SaveChanges()>0;
+        }
+
+        public async Task<bool> UpdateProduct(Product product)
+        {
+            _ctx.Product.Update(product);
             return _ctx.SaveChanges()>0;
         }
     }

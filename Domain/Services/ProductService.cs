@@ -17,6 +17,7 @@ namespace Domain.Services
         Task<ProductDTO> GetProductById(int id);
         Task<List<ProductDTO>> ListProducts();
         Task<bool> SaveProduct(ProductDTO product);
+        Task<bool> UpdateProduct(ProductDTO product);
     }
     public class ProductService : IProductService
     {
@@ -44,6 +45,11 @@ namespace Domain.Services
         public async Task<bool> SaveProduct(ProductDTO product)
         {
             return await _repository.SaveProduct(_mapper.Map<Product>(product));
+        }
+
+        public async Task<bool> UpdateProduct(ProductDTO product)
+        {
+            return await _repository.UpdateProduct(_mapper.Map<Product>(product));
         }
     }
 }

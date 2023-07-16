@@ -42,8 +42,6 @@ namespace AdminCRWeb.Controllers
                 response.Header.Message = ex.ToString();
                 return BadRequest(response);
             }
-            
-            
         }
         [HttpPost]
         [Route("GetProductById")]
@@ -52,7 +50,7 @@ namespace AdminCRWeb.Controllers
             var response = new Response<ProductDTO>();
             try
             {
-                response.Data = await _service.GetProductById(req.ProductId);
+                response.Data = await _service.GetProductById(req.Id);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -81,6 +79,26 @@ namespace AdminCRWeb.Controllers
                 return BadRequest(response);
             }
             
+        }
+
+        [HttpPost]
+        [Route("UpdateProduct")]
+        public async Task<IActionResult> UpdateProduct(ProductDTO product)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                response.Data = await _service.UpdateProduct(product);
+                response.Header.Message = response.Data ? "El producto se ha actualizado con éxito" : "No se actualizo el producto";
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
+
         }
     }
 }

@@ -7,7 +7,7 @@ namespace AdminCRWeb.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    public class CustomerController : Controller
+    public class CustomerController : ControllerBase
     {
         public IConfiguration _config;
         public ICustomerService _service;
@@ -20,7 +20,7 @@ namespace AdminCRWeb.Controllers
 
         [HttpGet]
         [Route("GetCustomers")]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetCustomers()
         {
             var response = new Response<List<CustomerDTO>>();
             try
@@ -43,7 +43,26 @@ namespace AdminCRWeb.Controllers
             var response = new Response<CustomerDTO>();
             try
             {
-                response.Data = await _service.GetCustomerById(req.CustomerId);
+                response.Data = await _service.GetCustomerById(req.Id);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost]
+        [Route("UpdateCustomer")]
+        public async Task<IActionResult> UpdateCustomer(CustomerDTO customer)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                response.Data = await _service.UpdateCustomer(customer);
+                response.Header.Message = response.Data ? "El cliente se ha actualizado con éxito" : "No se actualizó el cliente";
                 return Ok(response);
             }
             catch (Exception ex)

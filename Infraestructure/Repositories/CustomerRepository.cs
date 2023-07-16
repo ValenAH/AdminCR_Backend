@@ -1,5 +1,6 @@
 ﻿using Infraestructure.Database;
 using Infraestructure.Database.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Infraestructure.Repositories
         Task<List<Customer>> ListCustomers();
         Task<Customer> GetCustomerById(int customerId);
         Task<bool> SaveCustomer(Customer customer);
+        Task<bool> UpdateCustomer(Customer customer);
     }
     public class CustomerRepository: ICustomerRepository
     {
@@ -24,11 +26,17 @@ namespace Infraestructure.Repositories
         }
         public async Task<List<Customer>> ListCustomers()
         {
-            return _ctx.Customer.ToList();
+            var customers = _ctx.Customer.Include("IdentificationType").ToList();
+            return customers;
         }
         public async Task<Customer> GetCustomerById(int customerId)
         {
-            return _ctx.Customer.Where(x => x.CustomerId == customerId).FirstOrDefault();
+            return _ctx.Customer.Include("IdentificationType").Where(x => x.Id == customerId).FirstOrDefault();
+        }
+        public async Task<bool> UpdateCustomer(Customer customer)
+        {
+            _ctx.Customer.Update(customer);
+            return _ctx.SaveChanges() > 0;
         }
         public async Task<bool> SaveCustomer(Customer customer)
         {

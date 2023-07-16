@@ -8,12 +8,13 @@ namespace Domain.Contracts.DTO
 {
     public class SaleDTO
     {
-        public int SaleId { get; set; }
-        public string Consecutive { get; set; }
+        public int Id { get; set; }
+        public string? Consecutive { get; set; }
         public DateTime SaleDate { get; set; }
         public int CustomerId { get; set; }
+        public CustomerDTO? Customer { get; set; }
         public DateTime DeliveryDate { get; set; }
         public int SaleStatusId { get; set; }
-        public int DocumentTypeId { get; set; }
+        public SaleStatusDTO? SaleStatus { get; set; }
     }
 }

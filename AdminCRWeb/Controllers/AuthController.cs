@@ -64,7 +64,7 @@ namespace AdminCRWeb.Controllers
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.AddHours(1).ToString()),
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
-            new Claim("IdUser", user.IdUser.ToString()),
+            new Claim("Id", user.Id.ToString()),
             new Claim(ClaimTypes.Role, user.IdRole.ToString()),
             };
 

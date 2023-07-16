@@ -7,14 +7,10 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.Database.Entities
 {
-    public class User
+    public class IdentificationType
     {
         [Key]
         public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? UserName { get; set; }
-        public string? Password { get; set; }
-        public int IdRole { get; set; }
-        public bool Enable { get; set; }
+        public string Name { get; set; }
     }
 }
