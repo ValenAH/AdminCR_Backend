@@ -16,5 +16,7 @@ namespace Domain.Contracts.DTO
         public DateTime DeliveryDate { get; set; }
         public int SaleStatusId { get; set; }
         public SaleStatusDTO? SaleStatus { get; set; }
+        public decimal TotalAmount { get; set; }
+        public List<SaleDetailsDTO>? SaleDetails { get; set; }
     }
 }

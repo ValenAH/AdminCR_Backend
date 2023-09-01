@@ -12,9 +12,11 @@ namespace Infraestructure.Repositories
     public interface ISaleRepository
     {
         Task<List<Sale>> ListSales();
-        Task<Sale> GetCustomerById(int saleId);
+        Task<Sale> GetSaleById(int saleId);
         Task<bool> UpdateSale(Sale sale);
-        Task<bool> SaveSale(Sale sale);
+        Task<int> SaveSale(Sale sale);
+        Task<List<Sale>> GetSalesByCustomerId(int customerId);
+        Task<int> GetConsecutive();
     }
     public class SaleRepository: ISaleRepository
     {
@@ -26,23 +28,35 @@ namespace Infraestructure.Repositories
         }
         public async Task<List<Sale>> ListSales()
         {
-            var sales = _ctx.Sale.Include("Customer").Include("SaleStatus").Include("Customer.IdentificationType").ToList();
+            var sales = _ctx.Sale.Include("Customer").Include("SaleStatus").Include("Customer.IdentificationType").Include("SaleDetails").ToList();
             return sales;
         }
 
-        public async Task<Sale> GetCustomerById(int saleId)
+        public async Task<Sale> GetSaleById(int saleId)
         {
-            return _ctx.Sale.Include("Customer").Include("SaleStatus").Include("Customer.IdentificationType").Where(x => x.Id == saleId).FirstOrDefault();
+            return _ctx.Sale.Include("Customer").Include("SaleStatus").Include("Customer.IdentificationType").Include("SaleDetails").Include("SaleDetails.Product").Where(x => x.Id == saleId).FirstOrDefault();
         }
         public async Task<bool> UpdateSale(Sale sale)
         {
             _ctx.Sale.Update(sale);
             return _ctx.SaveChanges() > 0;
         }
-        public async Task<bool> SaveSale(Sale sale)
+        public async Task<int> SaveSale(Sale sale)
         {
             _ctx.Sale.Add(sale);
-            return _ctx.SaveChanges()>0;
+            _ctx.SaveChanges();
+            return sale.Id;
+        }
+        public async Task<List<Sale>> GetSalesByCustomerId(int customerId)
+        {
+            var sales = _ctx.Sale.Include("SaleStatus").Where(x => x.CustomerId == customerId).ToList();
+            return sales;
+        }
+
+        public async Task<int> GetConsecutive()
+        {
+            var count = _ctx.Sale.Count();
+            return count;
         }
     }
 }

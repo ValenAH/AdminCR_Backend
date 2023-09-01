@@ -11,11 +11,13 @@ namespace AdminCRWeb.Controllers
     {
         public IConfiguration _config;
         public ISaleService _service;
+        public ISaleDetailsService _serviceDetails;
 
-        public SaleController(IConfiguration config, ISaleService service)
+        public SaleController(IConfiguration config, ISaleService service, ISaleDetailsService saleDetailsService)
         {
             _config = config;
             _service = service;
+            _serviceDetails = saleDetailsService;
         }
 
         [HttpGet]
@@ -78,11 +80,25 @@ namespace AdminCRWeb.Controllers
         [Route("SaveSale")]
         public async Task<IActionResult> SaveSale(SaleDTO sale)
         {
-            var response = new Response<bool>();
+            var response = new Response<int>();
             try
             {
+                sale.Consecutive = await _service.GetConsecutive();
                 response.Data = await _service.SaveSale(sale);
-                response.Header.Message = response.Data ? "La venta se ha creado con éxito" : "No se guardó la venta";
+                 
+                if(response.Data != 0)
+                {
+                    foreach(SaleDetailsDTO detail in sale.SaleDetails)
+                    {
+                        detail.SaleId = response.Data;
+                    }
+                    await _serviceDetails.SaveSaleDetails(sale.SaleDetails);
+                    response.Header.Message = "La venta se ha creado con éxito";
+                }
+                else
+                {
+                    response.Header.Message = "No se guardó la venta";
+                }
                 return Ok(response);
             }
             catch (Exception ex)
@@ -92,6 +108,24 @@ namespace AdminCRWeb.Controllers
                 return BadRequest(response);
             }
 
+        }
+
+        [HttpPost]
+        [Route("GetSalesByCustomerId")]
+        public async Task<IActionResult> GetSalesByCustomerId(SaleDTO req)
+        {
+            var response = new Response<List<SaleDTO>>();
+            try
+            {
+                response.Data = await _service.GetSalesByCustomerId(req.CustomerId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
         }
     }
 }

@@ -15,7 +15,9 @@ namespace Domain.Services
         Task<List<SaleDTO>> ListSales();
         Task<SaleDTO> GetSaleById(int saleId);
         Task<bool> UpdateSale(SaleDTO sale);
-        Task<bool> SaveSale(SaleDTO sale);
+        Task<int> SaveSale(SaleDTO sale);
+        Task<List<SaleDTO>> GetSalesByCustomerId(int customerId);
+        Task<string> GetConsecutive();
     }
     public class SaleService: ISaleService
     {
@@ -34,16 +36,31 @@ namespace Domain.Services
         }
         public async Task<SaleDTO> GetSaleById(int saleId)
         {
-            var sale = await _repository.GetCustomerById(saleId);
+            var sale = await _repository.GetSaleById(saleId);
             return _mapper.Map<SaleDTO>(sale);
         }
         public async Task<bool> UpdateSale(SaleDTO sale)
         {
             return await _repository.UpdateSale(_mapper.Map<Sale>(sale));
         }
-        public async Task<bool> SaveSale(SaleDTO sale)
+        public async Task<int> SaveSale(SaleDTO sale)
         {
             return await _repository.SaveSale(_mapper.Map<Sale>(sale));
+        }
+        public async Task<List<SaleDTO>> GetSalesByCustomerId(int customerId)
+        {
+            var sales = await _repository.GetSalesByCustomerId(customerId);
+            return _mapper.Map<List<SaleDTO>>(sales);
+        }
+
+        public async Task<string> GetConsecutive()
+        {
+            var salesCount = await _repository.GetConsecutive();
+            var invoiceNumber = "CR00000";
+            salesCount++;
+            string salesNumber = salesCount.ToString();
+            invoiceNumber = invoiceNumber.Remove(7 - salesNumber.Length, salesNumber.Length) + salesNumber;
+            return invoiceNumber;
         }
     }
 }
