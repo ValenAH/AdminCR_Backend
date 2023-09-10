@@ -38,6 +38,24 @@ namespace AdminCRWeb.Controllers
                 return BadRequest(response);
             }
         }
+        [HttpPost]
+        [Route("UpdateSaleDetail")]
+        public async Task<IActionResult> UpdateSaveDetail(SaleDetailsDTO req)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                response.Data = await _service.UpdateSaleDetail(req);
+                response.Header.Message = response.Data ? "El producto se ha actualizado con éxito" : "No se actualizó el producto";
+                return Ok(response);
+            }
+            catch(Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
+        }
 
         [HttpPost]
         [Route("SaveSaleDetails")]

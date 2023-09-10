@@ -34,6 +34,23 @@ namespace AdminCRWeb.Controllers
                 return BadRequest(response);
             }
         }
+
+        [HttpPost]
+        [Route("SavePayment")]
+        public async Task<IActionResult> SavePayment(List<PaymentDTO> req)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                response.Data = await _service.SavePayment(req);
+                return Ok(response);
+            }catch (Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
+        }
         
     }
 }

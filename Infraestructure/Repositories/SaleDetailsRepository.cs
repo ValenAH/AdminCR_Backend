@@ -13,6 +13,7 @@ namespace Infraestructure.Repositories
     {
         Task<List<SaleDetails>> ListSaleDetails(int saleId);
         Task<bool> SaveSaleDetails(List<SaleDetails> list);
+        Task<bool> UpdateSaleDetail(SaleDetails saleDetails);
         Task<int> DeleteSaleDetail(int saleDetailId);
     }
     public class SaleDetailsRepository : ISaleDetailsRepository
@@ -27,7 +28,11 @@ namespace Infraestructure.Repositories
         {
             return _ctx.SaleDetails.Include("Product").Include("Product.Category").Where(x => x.SaleId == saleId).ToList();
         }
-
+        public async Task<bool> UpdateSaleDetail(SaleDetails saleDetails)
+        {
+            _ctx.SaleDetails.Update(saleDetails);
+            return _ctx.SaveChanges() > 0;
+        }
         public async Task<bool> SaveSaleDetails (List<SaleDetails> list)
         {
             _ctx.AddRange(list);

@@ -13,5 +13,6 @@ namespace Infraestructure.Database.Entities
         public PaymentMethod? PaymentMethod { get; set; }
         public int SaleId { get; set; }
         public decimal Amount { get; set; }
+        public DateTime Date {  get; set; }
     }
 }

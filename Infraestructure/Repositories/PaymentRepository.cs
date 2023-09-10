@@ -12,6 +12,7 @@ namespace Infraestructure.Repositories
     public interface IPaymentRepository
     {
         Task<List<Payment>> ListPaymentBySale(int saleId);
+        Task<bool> SavePayment(List<Payment> payment);
     }
     public class PaymentRepository : IPaymentRepository
     {
@@ -26,6 +27,12 @@ namespace Infraestructure.Repositories
         {
             var payments = _ctx.Payment.Include("PaymentMethod").Where(x => x.SaleId == saleId).ToList();
             return payments;
+        }
+
+        public async Task<bool> SavePayment(List<Payment> payment)
+        {
+            _ctx.Payment.AddRange(payment);
+            return _ctx.SaveChanges() > 0;
         }
     }
 }

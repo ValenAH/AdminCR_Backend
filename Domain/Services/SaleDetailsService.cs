@@ -14,6 +14,7 @@ namespace Domain.Services
     {
         Task<List<SaleDetailsDTO>> ListSaleDetails(int saleId);
         Task<bool> SaveSaleDetails(List<SaleDetailsDTO> list);
+        Task<bool> UpdateSaleDetail(SaleDetailsDTO saleDetail);
         Task<bool> DeleteSaleDetail(int saleDetailId);
     }
     public class SaleDetailsService : ISaleDetailsService
@@ -32,6 +33,11 @@ namespace Domain.Services
         {
             var saleDetails = await _repository.ListSaleDetails(saleId);
             return _mapper.Map<List<SaleDetailsDTO>>(saleDetails);
+        }
+
+        public async Task<bool> UpdateSaleDetail(SaleDetailsDTO saleDetail)
+        {
+            return await _repository.UpdateSaleDetail(_mapper.Map<SaleDetails>(saleDetail)); ;
         }
 
         public async Task<bool> SaveSaleDetails(List<SaleDetailsDTO> list)
