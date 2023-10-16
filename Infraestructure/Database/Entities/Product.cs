@@ -18,6 +18,7 @@ namespace Infraestructure.Database.Entities
         public int CategoryId { get; set; }
         public virtual Category? Category { get; set; }
         public bool Enable { get; set; }
+        public int ProductTypeId { get; set; }
 
     }
 }

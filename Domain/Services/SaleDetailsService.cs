@@ -48,22 +48,8 @@ namespace Domain.Services
 
         public async Task<bool> DeleteSaleDetail(int saleDetailId)
         {
-            var saleId = await _repository.DeleteSaleDetail(saleDetailId);
-            var sale = await _saleService.GetSaleById(saleId);
-            bool changed = false;
-            if (sale != null)
-            {
-                decimal totalAmount = 0;
-
-                foreach (var saleDetail in sale.SaleDetails)
-                {
-                    totalAmount += saleDetail.Amount * saleDetail.Quantity;
-                }
-                sale.TotalAmount = totalAmount;
-                changed = await _saleService.UpdateSale(sale);
-
-            }
-            return changed;
+            return await _repository.DeleteSaleDetail(saleDetailId);
+             
         }
     }
 }

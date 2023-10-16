@@ -4,6 +4,9 @@ using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using System.Web;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace AdminCRWeb.Controllers
 {
@@ -90,11 +93,6 @@ namespace AdminCRWeb.Controllers
                  
                 if(response.Data != 0)
                 {
-                    foreach(SaleDetailsDTO detail in sale.SaleDetails)
-                    {
-                        detail.SaleId = response.Data;
-                    }
-                    await _serviceDetails.SaveSaleDetails(sale.SaleDetails);
                     response.Header.Message = "La venta se ha creado con éxito";
                 }
                 else
@@ -130,24 +128,105 @@ namespace AdminCRWeb.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("GeneratePDF")]
-        public void GeneratePDF(SaleDTO sale)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GeneratePDF(int id)
         {
-            FileStream fs = new FileStream("Invoices\\Factura_"+sale.Consecutive +".pdf", FileMode.Create);
-            Document document = new Document(PageSize.LETTER, 5, 5, 7, 7);
-            PdfWriter pw = PdfWriter.GetInstance(document, fs);
+            var sale = await _service.GetSaleById(id);
+            MemoryStream ms = new MemoryStream();
+            Document document = new Document(PageSize.LETTER, 10, 10, 12, 12);
+            PdfWriter pw = PdfWriter.GetInstance(document, ms);
 
             document.Open();
 
             //Title and Author
             document.AddAuthor("Valen");
-            document.AddTitle("Factura");
+            document.AddTitle("Factura " + sale.Consecutive);
 
             //Definir la fuente
-            Font standardFont = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL, BaseColor.BLACK);
+            Font standardFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, BaseColor.BLACK);
             //Encabezado
-            document.Add(new Paragraph("Título"));
+            document.Add(new Paragraph("FACTURA DE VENTA"));
+            document.Add(new Paragraph("Liliana María Hincapié Noreña \n " +
+                                        "NIT:43588603-1 \n " +
+                                        "Carrera 52 N 2 sur 10 \n " +
+                                        "Teléfono: 255 26 20 \n" +
+                                        "E-mail: colchonescristorey@gmail.com"));
+            document.Add(new Paragraph("N° de factura: " + sale.Consecutive));
+            document.Add(new Paragraph("Fecha de factura: " + sale.SaleDate));
+            document.Add(Chunk.NEWLINE);
+            document.Add(new Paragraph("Datos del cliente"));
+
+            //Información del cliente
+            PdfPTable customerInformation = new PdfPTable(4);
+            customerInformation.WidthPercentage = 100;
+            PdfPCell customerFirstColumn = new(new Phrase("Identificación", standardFont))
+            {
+                BorderWidth = 0
+            };
+            PdfPCell customerSecondColumn = new(new Phrase(sale.Customer.IdentificationNumber, standardFont))
+            {
+                BorderWidth = 0
+            };
+            PdfPCell customerThirdColumn = new(new Phrase("Teléfono", standardFont))
+            {
+                BorderWidth = 0
+            };
+            PdfPCell customerFourthColumn = new(new Phrase(sale.Customer.Telephone, standardFont))
+            {
+                BorderWidth = 0
+            };
+            customerInformation.AddCell(customerFirstColumn);
+            customerInformation.AddCell(customerSecondColumn);
+            customerInformation.AddCell(customerThirdColumn);
+            customerInformation.AddCell(customerFourthColumn);
+
+            customerFirstColumn = new(new Phrase("Nombre", standardFont))
+            {
+                BorderWidth = 0
+            };
+            customerSecondColumn = new(new Phrase(sale.Customer.Name, standardFont))
+            {
+                BorderWidth = 0
+            };
+            customerThirdColumn = new(new Phrase("Dirección", standardFont))
+            {
+                BorderWidth = 0
+            };
+            customerFourthColumn = new(new Phrase(sale.Customer.Address, standardFont))
+            {
+                BorderWidth = 0
+            };
+
+            customerInformation.AddCell(customerFirstColumn);
+            customerInformation.AddCell(customerSecondColumn);
+            customerInformation.AddCell(customerThirdColumn);
+            customerInformation.AddCell(customerFourthColumn);
+
+            customerFirstColumn = new(new Phrase("Email", standardFont))
+            {
+                BorderWidth = 0
+            };
+            customerSecondColumn = new(new Phrase(sale.Customer.Email, standardFont))
+            {
+                BorderWidth = 0
+            };
+            customerThirdColumn = new(new Phrase("", standardFont))
+            {
+                BorderWidth = 0
+            };
+            customerFourthColumn = new(new Phrase("", standardFont))
+            {
+                BorderWidth = 0
+            };
+
+            customerInformation.AddCell(customerFirstColumn);
+            customerInformation.AddCell(customerSecondColumn);
+            customerInformation.AddCell(customerThirdColumn);
+            customerInformation.AddCell(customerFourthColumn);
+
+            document.Add(customerInformation);
+
+            //Espacio
             document.Add(Chunk.NEWLINE);
 
             //Encabezado columnas
@@ -199,7 +278,8 @@ namespace AdminCRWeb.Controllers
                 };
                 quantity = new(new Phrase(item.Quantity.ToString(), standardFont))
                 {
-                    BorderWidth = 0
+                    BorderWidth = 0,
+                    HorizontalAlignment = Element.ALIGN_CENTER
                 };
                 amount = new(new Phrase(item.Amount.ToString(), standardFont))
                 {
@@ -219,9 +299,14 @@ namespace AdminCRWeb.Controllers
             document.Add(table);
 
             document.Close();
-            pw.Close();
 
+            byte[] bytesSTream = ms.ToArray();
 
+            ms = new MemoryStream();
+            ms.Write(bytesSTream, 0, bytesSTream.Length);
+            ms.Position = 0;
+
+            return new FileStreamResult(ms, "application/pdf");
         }
     }
 }

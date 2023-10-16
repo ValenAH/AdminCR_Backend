@@ -14,7 +14,7 @@ namespace Infraestructure.Repositories
         Task<List<SaleDetails>> ListSaleDetails(int saleId);
         Task<bool> SaveSaleDetails(List<SaleDetails> list);
         Task<bool> UpdateSaleDetail(SaleDetails saleDetails);
-        Task<int> DeleteSaleDetail(int saleDetailId);
+        Task<bool> DeleteSaleDetail(int saleDetailId);
     }
     public class SaleDetailsRepository : ISaleDetailsRepository
     {
@@ -39,11 +39,12 @@ namespace Infraestructure.Repositories
             return _ctx.SaveChanges() > 0;
         }
 
-        public async Task<int> DeleteSaleDetail(int saleDetailId)
+        public async Task<bool> DeleteSaleDetail(int saleDetailId)
         {
             var saleDetail = _ctx.SaleDetails.Where(x => x.Id == saleDetailId).FirstOrDefault();
             _ctx.SaleDetails.Remove(saleDetail);
-            return saleDetail.SaleId;
+            _ctx.SaveChanges();
+            return _ctx.SaveChanges() > 0;
         }
     }
 }

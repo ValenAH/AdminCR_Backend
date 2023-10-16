@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Infraestructure.Database.Entities
         public int SaleStatusId { get; set; }
         public SaleStatus? SaleStatus { get; set; }
         public decimal TotalAmount { get; set; }
+        public bool isCredit { get; set; }
         public List<SaleDetails>?  SaleDetails {get; set;}
 
     }

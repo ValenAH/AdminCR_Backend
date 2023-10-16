@@ -17,14 +17,13 @@ namespace AdminCRWeb.Controllers
             _config = config;
             _service = service;
         }
-        [HttpGet]
-        [Route("GetPaymentBySale")]
-        public async Task<IActionResult> ListPaymentBySale(PaymentDTO req)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> ListPaymentBySale(int id)
         {
             var response = new Response<List<PaymentDTO>>();
             try
             {
-                response.Data = await _service.ListPaymentBySale(req.SaleId);
+                response.Data = await _service.ListPaymentBySale(id);
                 return Ok(response);
             }
             catch (Exception ex)

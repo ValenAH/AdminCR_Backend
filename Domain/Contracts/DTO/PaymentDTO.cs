@@ -13,6 +13,6 @@ namespace Domain.Contracts.DTO
         public PaymentMethodDTO? PaymentMethod { get; set; }
         public int SaleId { get; set; }
         public decimal Amount { get; set; }
-        public string Date  = DateTime.Today.ToString("d");
+        public DateTime Date { get; set; }
     }
 }

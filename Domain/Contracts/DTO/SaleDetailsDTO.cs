@@ -13,7 +13,6 @@ namespace Domain.Contracts.DTO
         public ProductDTO? Product { get; set; }
         public int Quantity { get; set; }
         public decimal Amount { get; set; }
-        public decimal? Discount { get; set; }
         public decimal? Tax { get; set; }
         public int SaleId { get; set; }
     }

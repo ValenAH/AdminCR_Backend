@@ -76,17 +76,16 @@ namespace AdminCRWeb.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("DeleteSaleDetail")]
-        public async Task<IActionResult> DeleteSaleDetail(SaleDetailsDTO req)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteSaleDetail(int id)
         {
             var response = new Response<bool>();
             try
             {
-                await _service.DeleteSaleDetail(req.Id);
+                await _service.DeleteSaleDetail(id);
                 response.Data = true;
                 response.Header.Message = response.Data ? "El producto se ha eliminado con éxito" : "No se pudo eliminar el producto";
-                
+
                 return Ok(response);
             }
             catch (Exception ex)

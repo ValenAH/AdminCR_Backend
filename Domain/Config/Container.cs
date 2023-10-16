@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Domain.Config
 {
@@ -39,14 +40,17 @@ namespace Domain.Config
             services.AddSingleton(mapper);
 
             //Connections
+            var version = new MySqlServerVersion(new Version(8, 0, 1));
 
             services.AddDbContext<Context>(
-                options => options.UseSqlServer(config.GetConnectionString("DbCon"),
-                sqlServerOptionsAction: sqlOptions =>
-                {
-                    sqlOptions.EnableRetryOnFailure();
-                })
-                );
+                options => options
+                        .UseMySql(config.GetConnectionString("DbCon"), version)
+                        // The following three options help with debugging, but should
+                        // be changed or removed for production.
+                        .LogTo(Console.WriteLine, LogLevel.Information)
+                        .EnableSensitiveDataLogging()
+                        .EnableDetailedErrors()
+                ) ;
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Domain.Contracts.DTO
         public int SaleStatusId { get; set; }
         public SaleStatusDTO? SaleStatus { get; set; }
         public decimal TotalAmount { get; set; }
+        public bool isCredit { get; set; }
         public List<SaleDetailsDTO>? SaleDetails { get; set; }
     }
 }
