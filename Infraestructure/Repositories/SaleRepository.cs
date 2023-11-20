@@ -12,6 +12,7 @@ namespace Infraestructure.Repositories
     public interface ISaleRepository
     {
         Task<List<Sale>> ListSales();
+        Task<List<Sale>> ListCreditSales();
         Task<Sale> GetSaleById(int saleId);
         Task<bool> UpdateSale(Sale sale);
         Task<int> SaveSale(Sale sale);
@@ -30,6 +31,11 @@ namespace Infraestructure.Repositories
         {
             var sales = _ctx.Sale.Include("Customer").Include("SaleStatus").Include("Customer.IdentificationType").Include("SaleDetails").ToList();
             return sales;
+        }
+        public async Task<List<Sale>> ListCreditSales()
+        {
+            var creditSales = _ctx.Sale.Include("Customer").Include("SaleStatus").Include("Customer.IdentificationType").Include("SaleDetails").Where(x => x.isCredit == true).ToList();
+            return creditSales;
         }
 
         public async Task<Sale> GetSaleById(int saleId)

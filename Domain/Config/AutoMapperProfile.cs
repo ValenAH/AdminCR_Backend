@@ -23,6 +23,7 @@ namespace Domain.Config
             CreateMap<SaleDetailsDTO, SaleDetails>().ReverseMap();
             CreateMap<PaymentMethodDTO, PaymentMethod>().ReverseMap();
             CreateMap<PaymentDTO, Payment>().ReverseMap();
+            CreateMap<QuotaDTO, Quota>().ReverseMap();
         }
     }
 }

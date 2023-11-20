@@ -60,6 +60,23 @@ namespace AdminCRWeb.Controllers
                 return BadRequest(response);
             }
         }
+        [HttpGet]
+        [Route("GetCreditSales")]
+        public async Task<IActionResult> GetCreditSales()
+        {
+            var response = new Response<List<SaleDTO>>();
+            try
+            {
+                response.Data = await _service.ListCreditSales();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
+        }
 
         [HttpPost]
         [Route("UpdateSale")]

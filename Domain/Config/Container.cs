@@ -28,6 +28,7 @@ namespace Domain.Config
             services.AddScoped<ISaleDetailsRepository, SaleDetailsRepository>();
             services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<IQuotaRepository, QuotaRepository>();
 
             //AutoMapper
             var configMapper = new MapperConfiguration(cfg =>

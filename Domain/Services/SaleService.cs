@@ -13,6 +13,7 @@ namespace Domain.Services
     public interface ISaleService
     {
         Task<List<SaleDTO>> ListSales();
+        Task<List<SaleDTO>> ListCreditSales();
         Task<SaleDTO> GetSaleById(int saleId);
         Task<bool> UpdateSale(SaleDTO sale);
         Task<int> SaveSale(SaleDTO sale);
@@ -33,6 +34,11 @@ namespace Domain.Services
         {
             var sales = await _repository.ListSales();
             return _mapper.Map<List<SaleDTO>>(sales);
+        }
+        public async Task<List<SaleDTO>> ListCreditSales()
+        {
+            var creditSales = await _repository.ListCreditSales();
+            return _mapper.Map<List<SaleDTO>>(creditSales);
         }
         public async Task<SaleDTO> GetSaleById(int saleId)
         {

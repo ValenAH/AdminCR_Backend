@@ -19,6 +19,7 @@ namespace Infraestructure.Database
         public DbSet<SaleDetails> SaleDetails { get; set; }
         public DbSet<PaymentMethod> PaymentMethod { get; set; }
         public DbSet<Payment> Payment { get; set; }
+        public DbSet<Quota> Quota { get; set; }
         public Context(DbContextOptions<Context> options) :base(options)
         {
 

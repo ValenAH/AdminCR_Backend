@@ -22,6 +22,7 @@ builder.Services.AddTransient<ISaleService, SaleService>();
 builder.Services.AddTransient<ISaleDetailsService, SaleDetailsService>();
 builder.Services.AddTransient<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddTransient<IPaymentService, PaymentService>();
+builder.Services.AddTransient<IQuotaService, QuotaService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer( options =>
 {
     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
