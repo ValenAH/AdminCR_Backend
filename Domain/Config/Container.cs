@@ -41,17 +41,27 @@ namespace Domain.Config
             services.AddSingleton(mapper);
 
             //Connections
-            var version = new MySqlServerVersion(new Version(8, 0, 1));
+            var dbConnectionString = config.GetConnectionString("DbCon");
+
+            if (string.IsNullOrWhiteSpace(dbConnectionString))
+            {
+                dbConnectionString = Environment.GetEnvironmentVariable("DB__ACCESS");
+            }
+
+            if (string.IsNullOrWhiteSpace(dbConnectionString))
+            {
+                throw new InvalidOperationException("No database connection string found. Set 'ConnectionStrings:DbCon' or the 'DB__ACCESS' environment variable.");
+            }
 
             services.AddDbContext<Context>(
                 options => options
-                        .UseMySql(config.GetConnectionString("DbCon"), version)
+                        .UseNpgsql(dbConnectionString)
                         // The following three options help with debugging, but should
                         // be changed or removed for production.
                         .LogTo(Console.WriteLine, LogLevel.Information)
                         .EnableSensitiveDataLogging()
                         .EnableDetailedErrors()
-                ) ;
+                );
         }
     }
 }

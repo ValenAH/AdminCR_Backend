@@ -12,7 +12,8 @@ namespace Infraestructure.Database.Entities
         public int PaymentMethodId { get; set; }
         public PaymentMethod? PaymentMethod { get; set; }
         public int SaleId { get; set; }
+        public Sale? Sale { get; set; }
         public decimal Amount { get; set; }
-        public DateTime Date {  get; set; }
+        public DateTime Date { get; set; }
     }
 }

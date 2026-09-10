@@ -13,12 +13,22 @@ namespace Infraestructure.Database.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
         public int Id { get; set; }
+
+        [Column("name")]
         public string? Name { get; set; }
+
+        [Column("username")]
         public string? UserName { get; set; }
+
+        [Column("password")]
         public string? Password { get; set; }
-        [Column("RoleId")]
+
+        [Column("role_id")]
         public int IdRole { get; set; }
+
+        [Column("enable")]
         public bool Enable { get; set; }
     }
 }

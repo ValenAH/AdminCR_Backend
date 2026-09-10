@@ -13,6 +13,6 @@ namespace Infraestructure.Database.Entities
         public DateTime Date { get; set; }
         public bool IsPayed { get; set; }
         public int SaleId { get; set; }
-
+        public Sale? Sale { get; set; }
     }
 }
