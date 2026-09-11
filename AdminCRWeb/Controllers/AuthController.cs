@@ -62,7 +62,7 @@ namespace AdminCRWeb.Controllers
             var claims = new[]
             {
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.AddHours(1).ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
             new Claim(JwtRegisteredClaimNames.Name, user.Name),
             new Claim("Id", user.Id.ToString()),
             new Claim(ClaimTypes.Role, user.IdRole.ToString()),

@@ -24,7 +24,18 @@ namespace Infraestructure.Repositories
         }
         public async Task<User> GetUserByCredentials(string user, string pass)
         {
-            return _ctx.User.Where(x => x.UserName == user && x.Password == pass).FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(pass))
+            {
+                return null;
+            }
+
+            var dbUser = _ctx.User.FirstOrDefault(x => x.UserName == user);
+            if (dbUser == null || string.IsNullOrWhiteSpace(dbUser.Password))
+            {
+                return null;
+            }
+
+            return BCrypt.Net.BCrypt.Verify(pass, dbUser.Password) ? dbUser : null;
         }
         public async Task<List<User>> ListUsers()
         {

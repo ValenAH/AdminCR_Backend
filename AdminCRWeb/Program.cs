@@ -4,6 +4,32 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+var envFilePath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+if (File.Exists(envFilePath))
+{
+    foreach (var line in File.ReadAllLines(envFilePath))
+    {
+        if (string.IsNullOrWhiteSpace(line) || line.TrimStart().StartsWith("#"))
+            continue;
+
+        var normalized = line.Trim();
+        if (normalized.StartsWith("export ", StringComparison.OrdinalIgnoreCase))
+            normalized = normalized[7..].Trim();
+
+        var separatorIndex = normalized.IndexOf('=');
+        if (separatorIndex <= 0)
+            continue;
+
+        var key = normalized[..separatorIndex].Trim();
+        var value = normalized[(separatorIndex + 1)..].Trim();
+
+        if (value.Length >= 2 && value.StartsWith('"') && value.EndsWith('"'))
+            value = value[1..^1];
+
+        Environment.SetEnvironmentVariable(key, value);
+    }
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,6 +39,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthorization();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();

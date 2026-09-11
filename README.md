@@ -1,6 +1,6 @@
 # AdminCR_Backend
 
-Backend de administración para gestión de ventas, clientes, productos y pagos, desarrollado con ASP.NET Core y MySQL.
+Backend de administración para gestión de ventas, clientes, productos y pagos, desarrollado con ASP.NET Core y PostgreSQL/Supabase.
 
 ## Arquitectura general
 
@@ -17,7 +17,7 @@ flowchart LR
     C --> D[Domain\nDTOs / Mappers]
     C --> E[Infraestructure\nRepositories]
     E --> F[Infraestructure\nContext]
-    F --> G[(MySQL)]
+    F --> G[(PostgreSQL / Supabase)]
 
     subgraph Presentation
         B
@@ -40,7 +40,7 @@ flowchart LR
 1. El cliente consume los endpoints expuestos por la API.
 2. Los controladores reciben la solicitud y la envían a los servicios del dominio.
 3. Los servicios aplican la lógica de negocio y usan repositorios.
-4. Los repositorios interactúan con Entity Framework Core y la base de datos MySQL.
+4. Los repositorios interactúan con Entity Framework Core y la base de datos PostgreSQL/Supabase.
 
 ## Relación principal de entidades
 
@@ -189,9 +189,23 @@ Incluye:
 
 ## Siguientes pasos recomendados
 
-- Configurar la cadena de conexión de Supabase en `appsettings.json` y validar la conexión desde la aplicación.
-- Crear las migraciones de EF Core para PostgreSQL y mantener el esquema alineado con el modelo actual.
-- Definir y validar las tablas de catálogo necesarias: `role`, `category` y `sale_status`.
-- Garantizar que `sale_status` represente el estado real de la venta y que `isCredit` determine si el pago es a crédito o contado.
-- Revisar autenticación, permisos y políticas de acceso para el entorno de Supabase, especialmente si se exponen tablas o endpoints protegidos.
+- Mantener la conexión de la API en la variable de entorno `DB__ACCESS` con una cadena Npgsql válida, usando el pooler de Supabase en entornos como Codespaces.
+- Validar la app con el comando local confirmado:
+
+```bash
+cd /workspaces/AdminCR_Backend
+export DB__ACCESS='Host=aws-0-us-east-2.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.ttqbvnkgyiiqgxowgmte;Password=TU_PASSWORD;SSL Mode=Require;Trust Server Certificate=true;Pooling=true;Timeout=15;Command Timeout=30'
+dotnet run --project AdminCRWeb/AdminCRWeb.csproj --urls "http://0.0.0.0:5291;https://0.0.0.0:7291"
+```
+
+- Probar el endpoint real para confirmar que la conexión y el esquema coinciden:
+
+```bash
+curl -k -sS -i https://localhost:7291/api/User/GetUsers
+```
+
+- Revisar y mantener el mapeo de propiedades a columnas PostgreSQL en minúsculas, por ejemplo: `id`, `role_id`, `username`, `enable`.
+- Verificar que los catálogos iniciales estén creados y alineados con el esquema de Supabase: `role`, `category`, `identification_type`, `sale_status`, `payment_method`.
+- Revisar autenticación, permisos y políticas de acceso para el entorno de Supabase, especialmente si hay tablas protegidas o endpoints que requieren JWT.
+- Mantener el README actualizado cada vez que cambie la conexión, el hostname del pooler o las convenciones del esquema.
 

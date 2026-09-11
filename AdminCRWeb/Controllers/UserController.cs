@@ -40,6 +40,15 @@ namespace AdminCRWeb.Controllers
             var response = new Response<bool>();
             try
             {
+                if (string.IsNullOrWhiteSpace(user.Password))
+                {
+                    response.Header.Code = 400;
+                    response.Header.Message = "La contraseña es obligatoria";
+                    return BadRequest(response);
+                }
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
                 response.Data = await _service.SaveUser(user);
                 response.Header.Message = response.Data ? "El usuario ha sido creado con éxito" : "El usuario no se guardó";
                 return Ok(response);
