@@ -12,14 +12,28 @@ namespace Infraestructure.Database.Entities
     public class Product
     {
         [Key]
+        [Column("id")]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public int Price { get; set; }
-        public int UnitCost { get; set; }
-        public int CategoryId { get; set; }
-        public virtual Category? Category { get; set; }
-        public bool Enable { get; set; }
 
+        [Column("name")]
+        public string Name { get; set; }
+
+        [Column("description")]
+        public string Description { get; set; }
+
+        [Column("price")]
+        public int Price { get; set; }
+
+        [Column("unit_cost")]
+        public int UnitCost { get; set; }
+
+        [Column("category_id")]
+        public int CategoryId { get; set; }
+
+        [ForeignKey(nameof(CategoryId))]
+        public virtual Category? Category { get; set; }
+
+        [Column("enable")]
+        public bool Enable { get; set; }
     }
 }

@@ -10,11 +10,22 @@ namespace Infraestructure.Database.Entities
     [Table("quota")]
     public class Quota
     {
+        [Column("id")]
         public int Id { get; set; }
+
+        [Column("amount")]
         public decimal Amount { get; set; }
+
+        [Column("date")]
         public DateTime Date { get; set; }
+
+        [Column("is_payed")]
         public bool IsPayed { get; set; }
+
+        [Column("sale_id")]
         public int SaleId { get; set; }
+
+        [ForeignKey(nameof(SaleId))]
         public Sale? Sale { get; set; }
     }
 }

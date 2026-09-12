@@ -10,8 +10,10 @@ namespace Infraestructure.Database.Entities
     [Table("sale_status")]
     public class SaleStatus
     {
+        [Column("id")]
         public int Id { get; set; }
-        [Column("name")]
+
+        [Column("status")]
         public string Status { get; set; }
     }
 }
