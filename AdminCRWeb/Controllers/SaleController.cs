@@ -176,7 +176,10 @@ namespace AdminCRWeb.Controllers
 
                 var pdfBytes = BuildInvoicePdf(sale);
                 var fileName = string.IsNullOrWhiteSpace(sale.Consecutive) ? $"factura-{id}.pdf" : $"factura-{sale.Consecutive}.pdf";
-                return File(pdfBytes, "application/pdf", fileName);
+
+                Response.Headers.Add("Content-Disposition", $"inline; filename*=UTF-8''{Uri.EscapeDataString(fileName)}");
+                Response.Headers.Add("Cache-Control", "no-store");
+                return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
             {
