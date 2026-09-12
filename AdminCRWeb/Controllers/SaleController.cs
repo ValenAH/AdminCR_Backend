@@ -234,6 +234,7 @@ namespace AdminCRWeb.Controllers
             var normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, textColor);
             var smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 9, Font.NORMAL, mutedColor);
             var accentBold = new Font(Font.FontFamily.TIMES_ROMAN, 13, Font.BOLD, accentColor);
+            var headerFill = new BaseColor(238, 243, 249);
 
             var invoiceTitleBackground = new BaseColor(238, 243, 249);
             var titleParagraph = new Paragraph("FACTURA DE VENTA", new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD, BaseColor.BLACK))
@@ -276,7 +277,7 @@ namespace AdminCRWeb.Controllers
             var logo = TryLoadLogo();
             if (logo != null)
             {
-                logo.ScalePercent(18f);
+                logo.ScaleToFit(110f, 70f);
                 logo.Alignment = Element.ALIGN_CENTER;
                 logoCell.AddElement(logo);
             }
@@ -289,9 +290,10 @@ namespace AdminCRWeb.Controllers
             {
                 Border = Rectangle.NO_BORDER,
                 Padding = 10f,
-                VerticalAlignment = Element.ALIGN_MIDDLE
+                VerticalAlignment = Element.ALIGN_MIDDLE,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
-            companyCell.AddElement(new Paragraph("Liliana María Hincapié Noreña", new Font(Font.FontFamily.TIMES_ROMAN, 15, Font.BOLD, textColor)));
+            companyCell.AddElement(new Paragraph("Liliana María Hincapié Noreña", new Font(Font.FontFamily.TIMES_ROMAN, 15, Font.NORMAL, textColor)));
             companyCell.AddElement(new Paragraph("NIT: 43588603-1", normalFont));
             companyCell.AddElement(new Paragraph("Carrera 52 N 2 sur 10", normalFont));
             companyCell.AddElement(new Paragraph("Teléfono: 255 26 20", normalFont));
@@ -307,14 +309,15 @@ namespace AdminCRWeb.Controllers
 
             var labelTable = new PdfPTable(2);
             labelTable.WidthPercentage = 100;
-            labelTable.SetWidths(new float[] { 45f, 55f });
+            labelTable.SetWidths(new float[] { 60f, 40f });
 
             var noFacturaLabel = new PdfPCell(new Phrase("N° Factura", labelFont))
             {
                 Border = Rectangle.BOX,
                 Padding = 6f,
-                BackgroundColor = new BaseColor(238, 243, 249),
-                BorderColor = new BaseColor(220, 224, 232)
+                BackgroundColor = headerFill,
+                BorderColor = new BaseColor(220, 224, 232),
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             var noFacturaValue = new PdfPCell(new Phrase((string.IsNullOrWhiteSpace(sale.Consecutive) ? "N/A" : sale.Consecutive), normalFont))
             {
@@ -327,8 +330,9 @@ namespace AdminCRWeb.Controllers
             {
                 Border = Rectangle.BOX,
                 Padding = 6f,
-                BackgroundColor = new BaseColor(238, 243, 249),
-                BorderColor = new BaseColor(220, 224, 232)
+                BackgroundColor = headerFill,
+                BorderColor = new BaseColor(220, 224, 232),
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             var fechaValue = new PdfPCell(new Phrase(sale.SaleDate.ToString("dd/MM/yyyy"), normalFont))
             {
@@ -362,7 +366,6 @@ namespace AdminCRWeb.Controllers
                 SpacingBefore = 6f,
                 SpacingAfter = 10f
             });
-            document.Add(new iTextSharp.text.pdf.draw.LineSeparator(0.75f, 100f, companyColor, Element.ALIGN_CENTER, 0));
 
             var customerTable = new PdfPTable(2);
             customerTable.WidthPercentage = 100;
@@ -379,15 +382,19 @@ namespace AdminCRWeb.Controllers
 
             var customerInfoLabel = new PdfPCell(new Phrase("Identificación", labelFont))
             {
-                BorderWidth = 0,
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
                 Padding = 4f,
-                BackgroundColor = new BaseColor(245, 247, 250)
+                BackgroundColor = headerFill,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             var customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.IdentificationNumber) ? "N/A" : customer.IdentificationNumber, normalFont))
             {
-                BorderWidth = 0,
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
                 Padding = 4f,
-                BackgroundColor = new BaseColor(245, 247, 250)
+                BackgroundColor = BaseColor.WHITE,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
 
             customerTable.AddCell(customerInfoLabel);
@@ -395,56 +402,76 @@ namespace AdminCRWeb.Controllers
 
             customerInfoLabel = new PdfPCell(new Phrase("Nombre", labelFont))
             {
-                BorderWidth = 0,
-                Padding = 4f
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
+                Padding = 4f,
+                BackgroundColor = headerFill,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Name) ? "Cliente no registrado" : customer.Name, normalFont))
             {
-                BorderWidth = 0,
-                Padding = 4f
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
+                Padding = 4f,
+                BackgroundColor = BaseColor.WHITE,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerTable.AddCell(customerInfoLabel);
             customerTable.AddCell(customerInfoValue);
 
             customerInfoLabel = new PdfPCell(new Phrase("Teléfono", labelFont))
             {
-                BorderWidth = 0,
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
                 Padding = 4f,
-                BackgroundColor = new BaseColor(245, 247, 250)
+                BackgroundColor = headerFill,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Telephone) ? "N/A" : customer.Telephone, normalFont))
             {
-                BorderWidth = 0,
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
                 Padding = 4f,
-                BackgroundColor = new BaseColor(245, 247, 250)
+                BackgroundColor = BaseColor.WHITE,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerTable.AddCell(customerInfoLabel);
             customerTable.AddCell(customerInfoValue);
 
             customerInfoLabel = new PdfPCell(new Phrase("Dirección", labelFont))
             {
-                BorderWidth = 0,
-                Padding = 4f
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
+                Padding = 4f,
+                BackgroundColor = headerFill,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Address) ? "Sin dirección" : customer.Address, normalFont))
             {
-                BorderWidth = 0,
-                Padding = 4f
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
+                Padding = 4f,
+                BackgroundColor = BaseColor.WHITE,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerTable.AddCell(customerInfoLabel);
             customerTable.AddCell(customerInfoValue);
 
             customerInfoLabel = new PdfPCell(new Phrase("Correo", labelFont))
             {
-                BorderWidth = 0,
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
                 Padding = 4f,
-                BackgroundColor = new BaseColor(245, 247, 250)
+                BackgroundColor = headerFill,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Email) ? "Sin email" : customer.Email, normalFont))
             {
-                BorderWidth = 0,
+                BorderWidth = 0.5f,
+                BorderColor = new BaseColor(220, 224, 232),
                 Padding = 4f,
-                BackgroundColor = new BaseColor(245, 247, 250)
+                BackgroundColor = BaseColor.WHITE,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
             customerTable.AddCell(customerInfoLabel);
             customerTable.AddCell(customerInfoValue);
@@ -611,26 +638,27 @@ namespace AdminCRWeb.Controllers
         private Image? TryLoadLogo()
         {
             var logoValue = _config["Company:LogoUrl"];
-            var basePaths = new List<string>();
+            var contentRoot = Directory.GetCurrentDirectory();
+            var exactCandidates = new List<string>
+            {
+                "/workspaces/AdminCR_Backend/AdminCRWeb/assets/Logo_CR.png",
+                "/workspaces/AdminCR_Backend/AdminCRWeb/assets/logo.png",
+                "/workspaces/AdminCR_Backend/assets/Logo_CR.png",
+                "/workspaces/AdminCR_Backend/assets/logo.png",
+                Path.Combine(contentRoot, "AdminCRWeb", "assets", "Logo_CR.png"),
+                Path.Combine(contentRoot, "AdminCRWeb", "assets", "logo.png"),
+                Path.Combine(contentRoot, "assets", "Logo_CR.png"),
+                Path.Combine(contentRoot, "assets", "logo.png"),
+                Path.Combine(contentRoot, "AdminCRWeb", "wwwroot", "Logo_CR.png"),
+                Path.Combine(contentRoot, "AdminCRWeb", "wwwroot", "logo.png")
+            };
 
             if (!string.IsNullOrWhiteSpace(logoValue))
             {
-                basePaths.Add(logoValue);
+                exactCandidates.Insert(0, logoValue);
             }
 
-            var contentRoot = Directory.GetCurrentDirectory();
-            basePaths.AddRange(new[]
-            {
-                Path.Combine(contentRoot, "AdminCRWeb", "assets", "Logo_CR.png"),
-                Path.Combine(contentRoot, "assets", "Logo_CR.png"),
-                Path.Combine(contentRoot, "wwwroot", "assets", "Logo_CR.png"),
-                Path.Combine(contentRoot, "wwwroot", "Logo_CR.png"),
-                Path.Combine(contentRoot, "AdminCRWeb", "wwwroot", "Logo_CR.png"),
-                Path.Combine(contentRoot, "AdminCRWeb", "assets", "logo.png"),
-                Path.Combine(contentRoot, "assets", "logo.png")
-            });
-
-            foreach (var candidate in basePaths.Distinct())
+            foreach (var candidate in exactCandidates.Distinct())
             {
                 try
                 {
@@ -647,7 +675,7 @@ namespace AdminCRWeb.Controllers
                 }
                 catch
                 {
-                    // Ignore invalid file candidates and continue searching.
+                    // Ignore invalid file candidates and continue.
                 }
             }
 
