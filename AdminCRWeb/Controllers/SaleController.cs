@@ -639,27 +639,26 @@ namespace AdminCRWeb.Controllers
         {
             var logoValue = _config["Company:LogoUrl"];
             var contentRoot = Directory.GetCurrentDirectory();
+            var baseDirectory = AppContext.BaseDirectory;
             var exactCandidates = new List<string>
             {
+                logoValue,
+                "/app/assets/Logo_CR.png",
+                "/app/assets/logo.png",
                 "/workspaces/AdminCR_Backend/AdminCRWeb/assets/Logo_CR.png",
                 "/workspaces/AdminCR_Backend/AdminCRWeb/assets/logo.png",
-                "/workspaces/AdminCR_Backend/assets/Logo_CR.png",
-                "/workspaces/AdminCR_Backend/assets/logo.png",
-                Path.Combine(contentRoot, "AdminCRWeb", "assets", "Logo_CR.png"),
-                Path.Combine(contentRoot, "AdminCRWeb", "assets", "logo.png"),
                 Path.Combine(contentRoot, "assets", "Logo_CR.png"),
                 Path.Combine(contentRoot, "assets", "logo.png"),
-                Path.Combine(contentRoot, "AdminCRWeb", "wwwroot", "Logo_CR.png"),
-                Path.Combine(contentRoot, "AdminCRWeb", "wwwroot", "logo.png")
+                Path.Combine(contentRoot, "AdminCRWeb", "assets", "Logo_CR.png"),
+                Path.Combine(contentRoot, "AdminCRWeb", "assets", "logo.png"),
+                Path.Combine(baseDirectory, "assets", "Logo_CR.png"),
+                Path.Combine(baseDirectory, "assets", "logo.png")
             };
-
-            if (!string.IsNullOrWhiteSpace(logoValue))
-            {
-                exactCandidates.Insert(0, logoValue);
-            }
 
             foreach (var candidate in exactCandidates.Distinct())
             {
+                if (string.IsNullOrWhiteSpace(candidate)) continue;
+
                 try
                 {
                     var resolvedPath = candidate;

@@ -8,6 +8,7 @@ RUN dotnet publish ./AdminCRWeb/AdminCRWeb.csproj -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY AdminCRWeb/assets ./assets
 
 EXPOSE 8080
 
