@@ -241,9 +241,8 @@ namespace AdminCRWeb.Controllers
 
             var logoCell = new PdfPCell
             {
-                Border = Rectangle.BOX,
+                Border = Rectangle.NO_BORDER,
                 Padding = 10f,
-                BorderColor = new BaseColor(200, 200, 200),
                 VerticalAlignment = Element.ALIGN_MIDDLE,
                 HorizontalAlignment = Element.ALIGN_CENTER
             };
@@ -262,9 +261,8 @@ namespace AdminCRWeb.Controllers
 
             var companyCell = new PdfPCell
             {
-                Border = Rectangle.BOX,
+                Border = Rectangle.NO_BORDER,
                 Padding = 10f,
-                BorderColor = new BaseColor(200, 200, 200),
                 VerticalAlignment = Element.ALIGN_MIDDLE
             };
             companyCell.AddElement(new Paragraph("Liliana María Hincapié Noreña", new Font(Font.FontFamily.TIMES_ROMAN, 15, Font.BOLD, textColor)));
@@ -275,9 +273,8 @@ namespace AdminCRWeb.Controllers
 
             var invoiceCell = new PdfPCell
             {
-                Border = Rectangle.BOX,
+                Border = Rectangle.NO_BORDER,
                 Padding = 8f,
-                BorderColor = new BaseColor(200, 200, 200),
                 VerticalAlignment = Element.ALIGN_MIDDLE,
                 HorizontalAlignment = Element.ALIGN_CENTER
             };
@@ -322,7 +319,7 @@ namespace AdminCRWeb.Controllers
                 SpacingBefore = 6f,
                 SpacingAfter = 6f
             });
-            invoiceCell.AddElement(new Paragraph("Régimen Simplificado", accentBold));
+            invoiceCell.AddElement(new Paragraph("Régimen Simplificado", normalFont));
             invoiceCell.AddElement(new Paragraph("Medellín", normalFont));
 
             headerTable.AddCell(logoCell);
@@ -366,12 +363,12 @@ namespace AdminCRWeb.Controllers
             customerTable.AddCell(customerInfoLabel);
             customerTable.AddCell(customerInfoValue);
 
-            customerInfoLabel = new PdfPCell(new Phrase("Teléfono", labelFont))
+            customerInfoLabel = new PdfPCell(new Phrase("Nombre", labelFont))
             {
                 BorderWidth = 0,
                 Padding = 4f
             };
-            customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Telephone) ? "N/A" : customer.Telephone, normalFont))
+            customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Name) ? "Cliente no registrado" : customer.Name, normalFont))
             {
                 BorderWidth = 0,
                 Padding = 4f
@@ -379,13 +376,13 @@ namespace AdminCRWeb.Controllers
             customerTable.AddCell(customerInfoLabel);
             customerTable.AddCell(customerInfoValue);
 
-            customerInfoLabel = new PdfPCell(new Phrase("Nombre", labelFont))
+            customerInfoLabel = new PdfPCell(new Phrase("Teléfono", labelFont))
             {
                 BorderWidth = 0,
                 Padding = 4f,
                 BackgroundColor = new BaseColor(245, 247, 250)
             };
-            customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Name) ? "Cliente no registrado" : customer.Name, normalFont))
+            customerInfoValue = new PdfPCell(new Phrase(string.IsNullOrWhiteSpace(customer.Telephone) ? "N/A" : customer.Telephone, normalFont))
             {
                 BorderWidth = 0,
                 Padding = 4f,
@@ -407,7 +404,7 @@ namespace AdminCRWeb.Controllers
             customerTable.AddCell(customerInfoLabel);
             customerTable.AddCell(customerInfoValue);
 
-            customerInfoLabel = new PdfPCell(new Phrase("Email", labelFont))
+            customerInfoLabel = new PdfPCell(new Phrase("Correo", labelFont))
             {
                 BorderWidth = 0,
                 Padding = 4f,
