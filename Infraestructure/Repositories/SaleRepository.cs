@@ -49,6 +49,11 @@ namespace Infraestructure.Repositories
         }
         public async Task<int> SaveSale(Sale sale)
         {
+            if (sale.SaleDetails != null)
+            {
+                sale.SaleDetails = null;
+            }
+
             _ctx.Sale.Add(sale);
             _ctx.SaveChanges();
             return sale.Id;

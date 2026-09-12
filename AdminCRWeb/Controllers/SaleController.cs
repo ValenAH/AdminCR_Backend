@@ -112,20 +112,23 @@ namespace AdminCRWeb.Controllers
                 sale.SaleDate = NormalizeDateTimeUtc(sale.SaleDate);
                 sale.DeliveryDate = NormalizeDateTimeUtc(sale.DeliveryDate);
 
+                var saleDetailsToSave = sale.SaleDetails ?? new List<SaleDetailsDTO>();
+                sale.SaleDetails = null;
+
                 sale.Consecutive = await _service.GetConsecutive();
                 var saleId = await _service.SaveSale(sale);
                 response.Data = saleId;
 
                 if (saleId != 0)
                 {
-                    if (sale.SaleDetails != null && sale.SaleDetails.Any())
+                    if (saleDetailsToSave.Any())
                     {
-                        foreach (var detail in sale.SaleDetails)
+                        foreach (var detail in saleDetailsToSave)
                         {
                             detail.SaleId = saleId;
                         }
 
-                        var detailsSaved = await _serviceDetails.SaveSaleDetails(sale.SaleDetails);
+                        var detailsSaved = await _serviceDetails.SaveSaleDetails(saleDetailsToSave);
                         if (!detailsSaved)
                         {
                             response.Header.Code = 500;
@@ -232,13 +235,30 @@ namespace AdminCRWeb.Controllers
             var smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 9, Font.NORMAL, mutedColor);
             var accentBold = new Font(Font.FontFamily.TIMES_ROMAN, 13, Font.BOLD, accentColor);
 
-            var titleParagraph = new Paragraph("FACTURA DE VENTA", titleFont)
+            var invoiceTitleBackground = new BaseColor(238, 243, 249);
+            var titleParagraph = new Paragraph("FACTURA DE VENTA", new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD, BaseColor.BLACK))
             {
                 Alignment = Element.ALIGN_CENTER,
-                SpacingBefore = 4f,
-                SpacingAfter = 12f
+                SpacingBefore = 0f,
+                SpacingAfter = 0f,
+                Leading = 20f
             };
-            document.Add(titleParagraph);
+
+            var titleCell = new PdfPCell(titleParagraph)
+            {
+                Colspan = 1,
+                Border = Rectangle.NO_BORDER,
+                BackgroundColor = invoiceTitleBackground,
+                PaddingTop = 10f,
+                PaddingBottom = 10f,
+                HorizontalAlignment = Element.ALIGN_CENTER
+            };
+
+            var titleBlock = new PdfPTable(1);
+            titleBlock.WidthPercentage = 100;
+            titleBlock.AddCell(titleCell);
+            document.Add(titleBlock);
+            document.Add(new Paragraph(" ") { SpacingAfter = 12f });
 
             var headerTable = new PdfPTable(3);
             headerTable.WidthPercentage = 100;
@@ -293,24 +313,28 @@ namespace AdminCRWeb.Controllers
             {
                 Border = Rectangle.BOX,
                 Padding = 6f,
-                BackgroundColor = new BaseColor(240, 240, 240)
+                BackgroundColor = new BaseColor(238, 243, 249),
+                BorderColor = new BaseColor(220, 224, 232)
             };
             var noFacturaValue = new PdfPCell(new Phrase((string.IsNullOrWhiteSpace(sale.Consecutive) ? "N/A" : sale.Consecutive), normalFont))
             {
                 Border = Rectangle.BOX,
                 Padding = 6f,
+                BorderColor = new BaseColor(220, 224, 232),
                 HorizontalAlignment = Element.ALIGN_CENTER
             };
             var fechaLabel = new PdfPCell(new Phrase("Fecha", labelFont))
             {
                 Border = Rectangle.BOX,
                 Padding = 6f,
-                BackgroundColor = new BaseColor(240, 240, 240)
+                BackgroundColor = new BaseColor(238, 243, 249),
+                BorderColor = new BaseColor(220, 224, 232)
             };
             var fechaValue = new PdfPCell(new Phrase(sale.SaleDate.ToString("dd/MM/yyyy"), normalFont))
             {
                 Border = Rectangle.BOX,
                 Padding = 6f,
+                BorderColor = new BaseColor(220, 224, 232),
                 HorizontalAlignment = Element.ALIGN_CENTER
             };
 
@@ -587,19 +611,49 @@ namespace AdminCRWeb.Controllers
         private Image? TryLoadLogo()
         {
             var logoValue = _config["Company:LogoUrl"];
-            if (string.IsNullOrWhiteSpace(logoValue))
+            var basePaths = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(logoValue))
             {
-                return null;
+                basePaths.Add(logoValue);
+            }
+
+            var contentRoot = Directory.GetCurrentDirectory();
+            basePaths.AddRange(new[]
+            {
+                Path.Combine(contentRoot, "AdminCRWeb", "assets", "Logo_CR.png"),
+                Path.Combine(contentRoot, "assets", "Logo_CR.png"),
+                Path.Combine(contentRoot, "wwwroot", "assets", "Logo_CR.png"),
+                Path.Combine(contentRoot, "wwwroot", "Logo_CR.png"),
+                Path.Combine(contentRoot, "AdminCRWeb", "wwwroot", "Logo_CR.png"),
+                Path.Combine(contentRoot, "AdminCRWeb", "assets", "logo.png"),
+                Path.Combine(contentRoot, "assets", "logo.png")
+            });
+
+            foreach (var candidate in basePaths.Distinct())
+            {
+                try
+                {
+                    var resolvedPath = candidate;
+                    if (!Path.IsPathRooted(candidate))
+                    {
+                        resolvedPath = Path.GetFullPath(Path.Combine(contentRoot, candidate));
+                    }
+
+                    if (System.IO.File.Exists(resolvedPath))
+                    {
+                        return Image.GetInstance(resolvedPath);
+                    }
+                }
+                catch
+                {
+                    // Ignore invalid file candidates and continue searching.
+                }
             }
 
             try
             {
-                if (System.IO.File.Exists(logoValue))
-                {
-                    return Image.GetInstance(logoValue);
-                }
-
-                if (Uri.TryCreate(logoValue, UriKind.Absolute, out var uri))
+                if (!string.IsNullOrWhiteSpace(logoValue) && Uri.TryCreate(logoValue, UriKind.Absolute, out var uri))
                 {
                     using var httpClient = new HttpClient();
                     var bytes = httpClient.GetByteArrayAsync(uri).GetAwaiter().GetResult();
