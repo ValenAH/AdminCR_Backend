@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Infraestructure.Database.Entities
 {
+    [Table("sale")]
     public class Sale
     {
         public int Id { get; set; }

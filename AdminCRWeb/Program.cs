@@ -80,6 +80,31 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.MapGet("/", () => Results.Content(@"
+<!DOCTYPE html>
+<html lang=""es""><head>
+    <meta charset=""utf-8"" />
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1"" />
+    <title>AdminCR Backend</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #111827; color: #f9fafb; display: grid; place-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #1f2937; padding: 2rem 2.5rem; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); text-align: center; }
+        h1 { margin-top: 0; }
+        p { color: #d1d5db; }
+        code { background: #0f172a; padding: 0.2rem 0.45rem; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>AdminCR Backend</h1>
+        <p>API funcionando correctamente.</p>
+        <p>Base URL: <code>https://manageyourdreams-backend.onrender.com</code></p>
+    </div>
+</body>
+</html>
+", "text/html"));
+
+app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "AdminCR Backend" }));
 app.MapControllers();
 app.UseCors(x => x
                 .AllowAnyMethod()
