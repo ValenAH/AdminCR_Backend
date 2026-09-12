@@ -86,6 +86,9 @@ namespace AdminCRWeb.Controllers
             var response = new Response<bool>();
             try
             {
+                sale.SaleDate = NormalizeDateTimeUtc(sale.SaleDate);
+                sale.DeliveryDate = NormalizeDateTimeUtc(sale.DeliveryDate);
+
                 response.Data = await _service.UpdateSale(sale);
                 response.Header.Message = response.Data ? "La venta se ha actualizado con éxito" : "No se actualizó la venta";
                 return Ok(response);
@@ -106,6 +109,9 @@ namespace AdminCRWeb.Controllers
             var response = new Response<int>();
             try
             {
+                sale.SaleDate = NormalizeDateTimeUtc(sale.SaleDate);
+                sale.DeliveryDate = NormalizeDateTimeUtc(sale.DeliveryDate);
+
                 sale.Consecutive = await _service.GetConsecutive();
                 var saleId = await _service.SaveSale(sale);
                 response.Data = saleId;
@@ -561,6 +567,21 @@ namespace AdminCRWeb.Controllers
 
             document.Close();
             return ms.ToArray();
+        }
+
+        private static DateTime NormalizeDateTimeUtc(DateTime value)
+        {
+            if (value == default)
+            {
+                return value;
+            }
+
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Local).ToUniversalTime()
+            };
         }
 
         private Image? TryLoadLogo()
