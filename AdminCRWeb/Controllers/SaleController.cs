@@ -192,7 +192,7 @@ namespace AdminCRWeb.Controllers
             }
         }
 
-        private static byte[] BuildInvoicePdf(SaleDTO sale)
+        private byte[] BuildInvoicePdf(SaleDTO sale)
         {
             var saleDetails = sale.SaleDetails ?? new List<SaleDetailsDTO>();
             var customer = sale.Customer ?? new CustomerDTO();
@@ -219,26 +219,55 @@ namespace AdminCRWeb.Controllers
             document.AddAuthor("AdminCR");
             document.AddTitle("Factura " + (string.IsNullOrWhiteSpace(sale.Consecutive) ? "N/A" : sale.Consecutive));
 
-            var titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD, companyColor);
-            var headerFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, BaseColor.BLACK);
-            var labelFont = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD, textColor);
-            var normalFont = new Font(Font.FontFamily.HELVETICA, 10, Font.NORMAL, textColor);
-            var smallFont = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL, mutedColor);
+            var titleFont = new Font(Font.FontFamily.TIMES_ROMAN, 20, Font.BOLD, companyColor);
+            var headerFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.BLACK);
+            var labelFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD, textColor);
+            var normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, textColor);
+            var smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 9, Font.NORMAL, mutedColor);
+            var accentBold = new Font(Font.FontFamily.TIMES_ROMAN, 13, Font.BOLD, accentColor);
 
-            document.Add(new Paragraph("FACTURA DE VENTA", titleFont));
-            document.Add(Chunk.NEWLINE);
+            var titleParagraph = new Paragraph("FACTURA DE VENTA", titleFont)
+            {
+                Alignment = Element.ALIGN_CENTER,
+                SpacingBefore = 4f,
+                SpacingAfter = 12f
+            };
+            document.Add(titleParagraph);
 
-            var headerTable = new PdfPTable(2);
+            var headerTable = new PdfPTable(3);
             headerTable.WidthPercentage = 100;
-            headerTable.SetWidths(new float[] { 60f, 40f });
+            headerTable.SetWidths(new float[] { 35f, 40f, 25f });
+            headerTable.SpacingAfter = 10f;
+
+            var logoCell = new PdfPCell
+            {
+                Border = Rectangle.BOX,
+                Padding = 10f,
+                BorderColor = new BaseColor(200, 200, 200),
+                VerticalAlignment = Element.ALIGN_MIDDLE,
+                HorizontalAlignment = Element.ALIGN_CENTER
+            };
+
+            var logo = TryLoadLogo();
+            if (logo != null)
+            {
+                logo.ScalePercent(18f);
+                logo.Alignment = Element.ALIGN_CENTER;
+                logoCell.AddElement(logo);
+            }
+            else
+            {
+                logoCell.AddElement(new Paragraph("LOGO", new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD, companyColor)));
+            }
 
             var companyCell = new PdfPCell
             {
-                Border = Rectangle.NO_BORDER,
-                Padding = 6f,
-                PaddingBottom = 10f
+                Border = Rectangle.BOX,
+                Padding = 10f,
+                BorderColor = new BaseColor(200, 200, 200),
+                VerticalAlignment = Element.ALIGN_MIDDLE
             };
-            companyCell.AddElement(new Paragraph("Liliana María Hincapié Noreña", new Font(Font.FontFamily.HELVETICA, 15, Font.BOLD, textColor)));
+            companyCell.AddElement(new Paragraph("Liliana María Hincapié Noreña", new Font(Font.FontFamily.TIMES_ROMAN, 15, Font.BOLD, textColor)));
             companyCell.AddElement(new Paragraph("NIT: 43588603-1", normalFont));
             companyCell.AddElement(new Paragraph("Carrera 52 N 2 sur 10", normalFont));
             companyCell.AddElement(new Paragraph("Teléfono: 255 26 20", normalFont));
@@ -246,15 +275,57 @@ namespace AdminCRWeb.Controllers
 
             var invoiceCell = new PdfPCell
             {
-                Border = Rectangle.NO_BORDER,
-                Padding = 6f,
-                HorizontalAlignment = Element.ALIGN_RIGHT
+                Border = Rectangle.BOX,
+                Padding = 8f,
+                BorderColor = new BaseColor(200, 200, 200),
+                VerticalAlignment = Element.ALIGN_MIDDLE,
+                HorizontalAlignment = Element.ALIGN_CENTER
             };
-            invoiceCell.AddElement(new Paragraph("FACTURA", new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, accentColor)));
-            invoiceCell.AddElement(new Paragraph("No. " + (string.IsNullOrWhiteSpace(sale.Consecutive) ? "N/A" : sale.Consecutive), labelFont));
-            invoiceCell.AddElement(new Paragraph("Fecha: " + sale.SaleDate.ToString("dd/MM/yyyy"), labelFont));
-            invoiceCell.AddElement(new Paragraph("Estado: " + (string.IsNullOrWhiteSpace(saleStatus.Status) ? "Pendiente" : saleStatus.Status), labelFont));
 
+            var labelTable = new PdfPTable(2);
+            labelTable.WidthPercentage = 100;
+            labelTable.SetWidths(new float[] { 45f, 55f });
+
+            var noFacturaLabel = new PdfPCell(new Phrase("N° Factura", labelFont))
+            {
+                Border = Rectangle.BOX,
+                Padding = 6f,
+                BackgroundColor = new BaseColor(240, 240, 240)
+            };
+            var noFacturaValue = new PdfPCell(new Phrase((string.IsNullOrWhiteSpace(sale.Consecutive) ? "N/A" : sale.Consecutive), normalFont))
+            {
+                Border = Rectangle.BOX,
+                Padding = 6f,
+                HorizontalAlignment = Element.ALIGN_CENTER
+            };
+            var fechaLabel = new PdfPCell(new Phrase("Fecha", labelFont))
+            {
+                Border = Rectangle.BOX,
+                Padding = 6f,
+                BackgroundColor = new BaseColor(240, 240, 240)
+            };
+            var fechaValue = new PdfPCell(new Phrase(sale.SaleDate.ToString("dd/MM/yyyy"), normalFont))
+            {
+                Border = Rectangle.BOX,
+                Padding = 6f,
+                HorizontalAlignment = Element.ALIGN_CENTER
+            };
+
+            labelTable.AddCell(noFacturaLabel);
+            labelTable.AddCell(noFacturaValue);
+            labelTable.AddCell(fechaLabel);
+            labelTable.AddCell(fechaValue);
+
+            invoiceCell.AddElement(labelTable);
+            invoiceCell.AddElement(new Paragraph(" ")
+            {
+                SpacingBefore = 6f,
+                SpacingAfter = 6f
+            });
+            invoiceCell.AddElement(new Paragraph("Régimen Simplificado", accentBold));
+            invoiceCell.AddElement(new Paragraph("Medellín", normalFont));
+
+            headerTable.AddCell(logoCell);
             headerTable.AddCell(companyCell);
             headerTable.AddCell(invoiceCell);
             document.Add(headerTable);
@@ -493,6 +564,36 @@ namespace AdminCRWeb.Controllers
 
             document.Close();
             return ms.ToArray();
+        }
+
+        private Image? TryLoadLogo()
+        {
+            var logoValue = _config["Company:LogoUrl"];
+            if (string.IsNullOrWhiteSpace(logoValue))
+            {
+                return null;
+            }
+
+            try
+            {
+                if (System.IO.File.Exists(logoValue))
+                {
+                    return Image.GetInstance(logoValue);
+                }
+
+                if (Uri.TryCreate(logoValue, UriKind.Absolute, out var uri))
+                {
+                    using var httpClient = new HttpClient();
+                    var bytes = httpClient.GetByteArrayAsync(uri).GetAwaiter().GetResult();
+                    return Image.GetInstance(bytes);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
+            return null;
         }
     }
 }
