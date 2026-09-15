@@ -79,6 +79,24 @@ namespace AdminCRWeb.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetPendingSales")]
+        public async Task<IActionResult> GetPendingSales()
+        {
+            var response = new Response<List<SaleDTO>>();
+            try
+            {
+                response.Data = await _service.ListPendingSales();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Header.Code = 500;
+                response.Header.Message = ex.ToString();
+                return BadRequest(response);
+            }
+        }
+
         [HttpPost]
         [Route("UpdateSale")]
         public async Task<IActionResult> UpdateSale(SaleDTO sale)

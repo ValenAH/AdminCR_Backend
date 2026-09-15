@@ -13,6 +13,7 @@ namespace Infraestructure.Repositories
     {
         Task<List<Sale>> ListSales();
         Task<List<Sale>> ListCreditSales();
+        Task<List<Sale>> ListPendingSales();
         Task<Sale> GetSaleById(int saleId);
         Task<bool> UpdateSale(Sale sale);
         Task<int> SaveSale(Sale sale);
@@ -36,6 +37,17 @@ namespace Infraestructure.Repositories
         {
             var creditSales = _ctx.Sale.Include("Customer").Include("SaleStatus").Include("Customer.IdentificationType").Include("SaleDetails").Where(x => x.isCredit == true).ToList();
             return creditSales;
+        }
+        public async Task<List<Sale>> ListPendingSales()
+        {
+            var pendingSales = _ctx.Sale
+                .Include("Customer")
+                .Include("SaleStatus")
+                .Include("Customer.IdentificationType")
+                .Include("SaleDetails")
+                .Where(x => x.SaleStatus != null && x.SaleStatus.Status.ToLower() == "pendiente")
+                .ToList();
+            return pendingSales;
         }
 
         public async Task<Sale> GetSaleById(int saleId)
